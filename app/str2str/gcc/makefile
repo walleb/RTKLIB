@@ -3,13 +3,17 @@
 BINDIR = /usr/local/bin
 SRC    = ../../../src
 
+STAGING_DIR = $(HOME)/Downloads/OpenWrt-SDK-brcm-2.4-for-Linux-i686-gcc-3.4.6_uClibc-0.9.30.1/staging_dir
+
+CC = $(STAGING_DIR)/toolchain-mipsel_gcc-3.4.6_uClibc-0.9.30.1/usr/bin/mipsel-openwrt-linux-uclibc-gcc
+
 # for beagleboard
 #CTARGET= -mfpu=neon -mfloat-abi=softfp -ffast-math
 CTARGET=
 
 OPTION = -DENAGLO -DENAGAL -DENAQZS -DENACMP -DTRACE -DNFREQ=3 -DNEXOBS=3
 CFLAGS = -Wall -O3 -ansi -pedantic -I$(SRC) $(OPTION) $(CTARGET)
-LDLIBS  = -lm -lrt -lpthread
+LDLIBS  = --rpath-link $(shell find $(STAGING_DIR) -name ld-uClibc.so.0) -B $(STAGING_DIR)/toolchain-mipsel_gcc-3.4.6_uClibc-0.9.30.1/lib -lm -lrt -pthread -lgcc
 
 all        : str2str
 str2str    : str2str.o stream.o rtkcmn.o solution.o sbas.o geoid.o
@@ -88,7 +92,7 @@ install:
 	cp str2str $(BINDIR)
 
 #DEVICE=ttyACM0
-DEVICE=ttyS1:115200:8:n:1:off
+DEVICE=tts/1:115200:8:n:1:off
 #DEVICE=ttyUSB0:115200:8:n:1:off
 
 test1:
